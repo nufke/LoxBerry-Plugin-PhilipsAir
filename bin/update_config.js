@@ -18,7 +18,7 @@ function update_config(config) {
   if (!config)
     config = {};
 
-  if (!config.mqtt) {
+  if (!config.devices) {
     config['devices'] = [];
   }
 
