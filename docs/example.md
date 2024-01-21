@@ -1,0 +1,50 @@
+# Example Philips Air AC2729/10 observation response
+
+```json
+{
+  "topic": "status",
+  "payload": {
+    "name": "...",
+    "type": "AC2729",
+    "modelid": "AC2729/10",
+    "swversion": "0.3.4",
+    "range": "MicroMario",
+    "Runtime": 50824111,
+    "rssi": -83,
+    "otacheck": false,
+    "wifilog": false,
+    "free_memory": 57440,
+    "WifiVersion": "AWS_Philips_AIR@73.1",
+    "ProductId": "...",
+    "DeviceId": "...",
+    "StatusType": "status",
+    "ConnectType": "Online",
+    "om": "3",
+    "pwr": "1",
+    "cl": false,
+    "aqil": 100,
+    "uil": "1",
+    "dt": 0,
+    "dtrs": 0,
+    "mode": "M",
+    "func": "PH",
+    "rhset": 60,
+    "rh": 33,
+    "temp": 20,
+    "pm25": 1,
+    "iaql": 1,
+    "aqit": 7,
+    "aqit_ext": 0,
+    "ddp": "3",
+    "rddp": "3",
+    "err": 0,
+    "wl": 100,
+    "fltt1": "A3",
+    "fltt2": "C7",
+    "fltsts0": 335,
+    "fltsts1": 4775,
+    "fltsts2": 4775,
+    "wicksts": 4775
+  }
+}
+```

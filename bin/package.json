@@ -1,0 +1,38 @@
+{
+  "name": "philipsair",
+  "version": "0.0.1",
+  "description": "LoxBerry Philips Air plugin",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "dev": "node index.js",
+    "start": "PM2_HOME=$(pwd)/.pm2 pm2 start ecosystem.custom.config.js --watch",
+    "restart": "PM2_HOME=$(pwd)/.pm2 pm2 restart ecosystem.custom.config.js --watch",
+    "stop": "PM2_HOME=$(pwd)/.pm2 pm2 stop ecosystem.custom.config.jss",
+    "delete": "PM2_HOME=$(pwd)/.pm2 pm2 delete ecosystem.custom.config.js",
+    "kill": "PM2_HOME=$(pwd)/.pm2 pm2 kill",
+    "list": "PM2_HOME=$(pwd)/.pm2 pm2 list",
+    "logs": "PM2_HOME=$(pwd)/.pm2 pm2 logs",
+    "status": "PM2_HOME=$(pwd)/.pm2 pm2 status"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nufke/LoxBerry-Plugin-PhilipsAir.git"
+  },
+  "author": "Martin Barnasconi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nufke/LoxBerry-Plugin-hilipsAir/issues"
+  },
+  "homepage": "https://github.com/nufke/LoxBerry-Plugin-hilipsAir/",
+  "dependencies": {
+    "aes-js": "^3.1.2",
+    "loxberry-logger": "git+https://github.com/nufke/loxberry-logger.git#9d1a7f0",
+    "mqtt": "^4.3.7",
+    "node-coap-client": "^2.1.0",
+    "pkcs7": "^1.0.4",
+    "pm2": "^5.3.0"
+  }
+}

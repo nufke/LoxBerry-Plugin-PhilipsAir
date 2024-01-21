@@ -1,0 +1,170 @@
+<TMPL_IF form1>
+  <div id="philipsairapp" >
+    <p class="wide">Philips Air Purifiers and Humidifiers</p>
+    <p>This plugin observes and controls Philips Air Purifiers and Humidifiers over MQTT.</p>
+
+    <h3>Device configuration</h3>
+    <p v-if="config.devices">This section lists the registered devices.</p>
+    
+    <div v-if="config.devices.length==0">
+      <p style="color:red">No devices registered!</p>
+    </div>
+
+    <div v-if="config.devices.length>0">
+      <div id="vforid" v-for="(device, index) in config.devices">
+        <div style="display: flex;">
+          <h3>Device {{index+1}}</h3>
+          <p><a v-on:click="removeDevice(index)">Remove</a></p>
+        </div>
+        <div class="ui-field-contain">
+          <label for="device.ipAddress" class="col-fixed" style="min-width:15%">IP address</label>
+          <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+            <input type="text" style="width:50%" id="device.ipAddress" v-model.trim="device.ipAddress"
+              v-on:change="dataChanged()">
+          </div>
+        </div>
+        <div class="ui-field-contain">
+          <label for="device.mqtt" class="col-fixed" style="min-width:15%">MQTT prefix</label>
+          <div class="ui-input-text ui-body-inherit ui-corner-all ui-shadow-inset">
+            <input type="text" style="width:50%" id="device.mqtt" v-model.trim="device.mqtt"
+              v-on:change="dataChanged()">
+          </div>
+        </div>
+      </div> <!-- v-for -->
+    </div> <!-- v-if devices.length>0-->
+
+    <div class="ui-field-contain">
+      <div class="ui-body-inherit" style="overflow: hidden;">
+          <!--<input  type="text" :id="testMessage" v-model.trim="testMessage">-->
+          <a style="float: left;" class="btnlogs ui-link ui-btn ui-btn-icon-left ui-btn-inline ui-corner-all" 
+          data-role="button" v-on:click="addDevice()" data-inline="true" data-mini="true" role="button">Add device</a>
+      </div>
+    </div>
+
+    <div style="height:15px"></div>
+
+    <!-- Save and Apply button -->
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <button :disabled='btn_disabled' class="ui-btn ui-btn-icon-right" data-inline="true"
+        v-on:click="saveApply()">Save
+        and Apply</button>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:center;font-size:70%;padding:0px">
+      <p style="color:green" v-if="pid != null">Philips Air plugin running, PID: {{pid}}</p>
+      <p style="color:red" v-else>Philips Air plugin not running!</p>
+    </div>
+
+    <div v-show="data_changed" style="color:blue">
+      Unsaved changes. Click 'Save and Apply' to save the new settings. 
+    </div>
+
+    <div v-show="data_saved" style="color:green">
+      Changes saved successfully.
+    </div>
+
+    <div v-show="data_save_error" style="color:red">
+      Error saving data.
+    </div>
+
+  </div>
+</TMPL_IF>
+
+<script>
+  const generic = '/admin/system/ajax/ajax-generic.php';
+  const philipsairapp = {
+    setup() {
+      console.log("Setup called");
+    },
+    data() {
+      var config = this.getPluginConfig();
+      const intervalID = setInterval(() => { this.updatePid(); }, 5000);
+      return {
+        config: { devices: {} },
+        data_changed: false,
+        data_saved: false,
+        data_save_error: false,
+        btn_disabled: false,
+        pid: this.updatePid(),
+      };
+    },
+    methods: {
+      dataChanged() {
+        this.data_changed = true;
+        this.data_saved = false;
+      },
+
+      saveApply() {
+        console.log("Called Save and Apply");
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(this.$data.config)
+        };
+        var self = this;
+        // Update config.json of the plugin
+        fetch(generic + '?file=LBPCONFIG/philipsair/config.json&write', requestOptions)
+          .then(function (response) {
+            if (response.ok != true) {
+              self.data_save_error = true;
+            }
+            else {
+              self.data_save_error = false;
+              self.data_saved = true;
+              self.data_changed = false;
+            }
+          });
+      },
+
+      getPluginConfig() {
+        console.log("Called getPluginConfig");
+        fetch(generic + '?file=LBPCONFIG/philipsair/config.json&read')
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error, status = ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('data', data);
+            this.config = data;
+          });
+      },
+
+      addDevice() {
+        this.config.devices.push({ ipAddress: 'aa', mqtt: 'bb' });
+        this.dataChanged();
+      },
+
+      removeDevice(index) {
+        const devices = this.config.devices.toSpliced(index, 1);
+        this.config.devices = devices;
+        console.log('delete item', index, this.config.devices);
+        this.dataChanged();
+      },
+
+      updatePid() {
+        console.log("Called updatePid");
+        fetch('/admin/plugins/philipsair/ajax/ajax-philipsair-handler.php?ajax=get_philipsair_pid')
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error, status = ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            this.pid = data;
+          });
+      }
+    }
+  }
+
+  Vue.createApp(philipsairapp)
+    .mount('#philipsairapp')
+
+</script>
+
+<TMPL_IF form2>
+  <div class="wide">Logfiles</div>
+  <TMPL_VAR loglist_html>
+</TMPL_IF>
