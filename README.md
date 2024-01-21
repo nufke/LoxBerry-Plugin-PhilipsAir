@@ -9,7 +9,7 @@ LoxBerry Plugin for the Philips Air Purifiers and Humidifiers.
 
 ## Acknowledgements
 
-This plugin is based on [node-red-contrib-philips-airjs](https://github.com/dionmes/node-red-contrib-philips-airjs). Special thanks to @dionmes.
+This plugin is based on [node-red-contrib-philips-airjs](https://github.com/dionmes/node-red-contrib-philips-airjs). Special thanks to [@dionmes](https://github.com/dionmes).
 
 ## Issues and questions
 

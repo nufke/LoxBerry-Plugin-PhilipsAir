@@ -1,6 +1,5 @@
 # Philips Air Commands
 
-|----------|------------------------------|---------|---------------------------------------------|
 | Command  | Description                  | Type    | Values                                      |
 |----------|------------------------------|---------|---------------------------------------------|
 | cl       | Child lock                   | boolean | true, false                                 |
@@ -10,11 +9,9 @@
 | pwr      | Power                        | string  | 0 (off), 1 (on)                             |
 | rhset    | Target humidity              | number  | 20, 40, 60                                  |
 | uil      | Buttons light                | string  | 0 (off), 1 (on)                             |
-|----------|------------------------------|---------|---------------------------------------------|
 
 # Philips Air Status fields
 
-|----------|------------------------------|---------|---------------------------------------------|
 | Status   | Description                  | Type    | Values                                      |
 |----------|------------------------------|---------|---------------------------------------------|
 | aqil     | Air quality index light      | number  | 100                                         |
@@ -42,5 +39,4 @@
 | temp     | Temperature                  | number  |                                             |
 | uil      | Buttons light                | string  | 0 (off), 1 (on)                             |
 | wicksts  | Wick filter replace (hours)  | number  |                                             |
-| wl       | Water level                  | number  |                                             |
-|----------|------------------------------|---------|---------------------------------------------|
+| wl       | Water level                  | number  | 0 (empty), 100 (filled)                     |
