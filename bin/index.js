@@ -25,28 +25,31 @@ const main = () => {
   let logLevel = getPluginLogLevel();
   let devices = [ ...config.devices];
 
-  // add field to store instance and subscribe each device to receive MQTT messages 
-  devices.forEach( device => {
-    device['inst'] = null;
-    mqttClient.subscribe(device.mqtt);
-  });
-
   //console.log('devices', devices);
   const logger = new Logger(syslogDbFile, logLevel);
   const app = new App(logger, logFile);
   const mqttClient = new MqttClient(globalConfig, app);
 
   if (!(config && config.devices)) {
-    logger.error('Missing or illegal configuration. Reinstall the plugin or report this issue.');
+    logger.error("Missing or illegal configuration. Reinstall the plugin or report this issue.");
     return;
   }
- 
-  mqttClient.subscribe('test');
+
+  // add field to store instance and subscribe each device to receive MQTT messages 
+  devices.forEach( device => {
+    device["inst"] = null;
+  });
+
+  mqttClient.subscribe(devices.map( item => item.mqtt + "/cmd/#"));
 
   mqttClient.on('message', function(topic, message, packet) {
-    if (message.length && devices.filter( item => item.mqtt)) {
+    const device = devices.find(item => topic.includes(item.mqtt));
+    if (message.length && device) {
       let resp = JSON.parse(message.toString());
-      publishTopic(topic, resp);
+      const items = topic.split("/");
+      const command = items[items.length-1]; // select last item
+      //console.log('command received', command, resp);
+      device.inst.sendDeviceCommand(command, resp);
     }
   });
 

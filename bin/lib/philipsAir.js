@@ -50,7 +50,7 @@ var philipsAir = function(device, logger) {
     });
   */
   } else {
-    this.logger.err("IP address not configured.");
+    this.logger.error("IP address not configured.");
   }
 };
 
@@ -124,10 +124,10 @@ philipsAir.prototype.syncAndObserve = function() {
       ).then(() => {
         this.logger.info("Observation of " + this.ipAddress + " started.");
       }).catch(() => {
-        this.logger.err("Error while observing");
+        this.logger.error("Error while observing");
       });
     }).catch(err => {
-      this.logger.err("Observing Philips Air failed.");
+      this.logger.error("Observing Philips Air failed.");
     });
   }
 };
@@ -152,13 +152,13 @@ philipsAir.prototype.syncDevice = function () {
         try {
           this.msgCounter = response.payload.toString('utf-8');
         } catch (err) {
-          this.logger.err("Philips Air msg counter corrupt. : " + err);
+          this.logger.error("Philips Air msg counter corrupt. : " + err);
         }
         resolve();
       })
       .catch(err => {
         this.msgCounter = "";
-        this.logger.err("Disconnected, Philips Air could not sync. : " + err);
+        this.logger.error("Disconnected, Philips Air could not sync. : " + err);
         reject("Sync request failed.");
       })
   })
@@ -183,41 +183,48 @@ philipsAir.prototype.receiveCommand = function (command) {
 };
 
 // Function to handle commands/settings to the device
-philipsAir.prototype.sendDeviceCommand = function (topic, value) {
+philipsAir.prototype.sendDeviceCommand = function (commandIn, value) {
+  let that = this;
+  const commands = ["aqil", "cl", "dt", "func", "mode", "om", "pwr", "rhset", "uil"]; // TODO more commands?
 
   // Internal function to encrypt the message payload
   function encryptPayload(unencryptedPayload) {
     // Increase and encode msg counter
     increaseCounter();
-    const key_and_iv = new crypto.createHash('md5').update(this.SECRET_KEY + this.msgCounter).digest('hex').toUpperCase();
+    const key_and_iv = new crypto.createHash('md5').update(that.SECRET_KEY + that.msgCounter).digest('hex').toUpperCase();
     const key = key_and_iv.substring(0, key_and_iv.length / 2);
     const iv = key_and_iv.substring(key_and_iv.length / 2, key_and_iv.length);
     const data = pkcs7.pad(aesjs.utils.utf8.toBytes(unencryptedPayload));
     let cipher = new aesjs.ModeOfOperation.cbc(Buffer.from(key, 'utf-8'), Buffer.from(iv, 'utf-8'));
     let encryptedBytes = Buffer.from(cipher.encrypt(data)).toString('hex').toUpperCase();
-    const hash = Buffer.from(crypto.createHash('sha256').update(this.msgCounter + encryptedBytes).digest('hex').toUpperCase());
-    return this.msgCounter + encryptedBytes + hash;
+    const hash = Buffer.from(crypto.createHash('sha256').update(that.msgCounter + encryptedBytes).digest('hex').toUpperCase());
+    return that.msgCounter + encryptedBytes + hash;
   };
 
   // Internal method to increase counter and convert back to hex big endian.
   function increaseCounter() {
-    let inbuffer = Buffer.from(this.msgCounter, 'hex');
+    let inbuffer = Buffer.from(that.msgCounter, 'hex');
     let counterint = inbuffer.readUInt32BE(0) + 1;
     const outbuffer = Buffer.allocUnsafe(4);
     outbuffer.writeUInt32BE(counterint, 0);
-    this.msgCounter = outbuffer.toString('hex').toUpperCase();
+    that.msgCounter = outbuffer.toString('hex').toUpperCase();
     return;
   };
 
-  if (!topic) {
-    this.logger.err("Command not found in topic.");
+  console.log('cmd', commandIn, commands.includes(commandIn.toLowerCase()));
+  if (!commandIn) {
+    this.logger.error("Command empty.");
+    return;
+  }
+
+  if (!commands.includes(commandIn.toLowerCase())) {
+    this.logger.error("Command not found.");
     return;
   }
 
   // TODO split command from full topic 
-  const fullTopic = topic.split('/');
-  const command = fullTopic[fullTopic.length].toLowerCase();
-  let commandValue = value.toLowerCase();
+  const command = commandIn.toLowerCase();
+  let commandValue = value.toString().toLowerCase();
 
   // Parse boolean string to boolean
   if (commandValue == "false" || commandValue == "true") {
@@ -236,12 +243,10 @@ philipsAir.prototype.sendDeviceCommand = function (topic, value) {
   let message = { state: { desired: { CommandType: 'app', DeviceId: '', EnduserId: '1' } } };
   message.state.desired[command] = commandValue;
 
+  console.log('send message:', message);
+
   // Stop observing to send command
   coap.stopObserving(this.urlPrefix + this.statuspath);
-
-  // Response message
-  const msg = { topic: "command", payload: "" };
-  this.logger.debug("Sending command: " + JSON.stringify(msg));
 
   // Sync and then send command
   this.syncDevice().then(() => {
@@ -257,18 +262,19 @@ philipsAir.prototype.sendDeviceCommand = function (topic, value) {
           const payload = response.payload.toString('utf-8');
           this.logger.info("Command response payload: " + payload);
         } else {
-          this.logger.error("Command response invalid: " + err);
+          this.logger.erroror("Command response invalid: " + err);
         }
         this.syncAndObserve();
       }).catch(err => {
-        this.logger.error("Command failed to transmit: " + err);
+        this.logger.erroror("Command failed to transmit: " + err);
         this.syncAndObserve();
       });
   })
     .catch(err => {
-      this.logger.error("Philips Air failed to sync, Command failed to transmit: " + err);
+      this.logger.erroror("Philips Air failed to sync, Command failed to transmit: " + err);
       this.syncAndObserve();
     })
+
 };
 
 

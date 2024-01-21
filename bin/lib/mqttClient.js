@@ -43,10 +43,6 @@ var mqttClient = function(globalConfig, app) {
     app.logger.debug('MQTT Client - receive topic: ' + topic + ', message: ' + message);
   });
 
-  function publishTopic(topic, data) {
-
-  }
-
   return client;
 };
 
