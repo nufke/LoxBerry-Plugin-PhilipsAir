@@ -31,24 +31,6 @@ var philipsAir = function(device, logger) {
     // Connect and observe
     this.syncAndObserve();
 
-    /*
-    // Register input events
-    node.on('input', (msg, send, done) => {
-      // Handle command
-      receiveCommand(node, send, msg);
-
-      // Node red done
-      if (done) { done(); }
-    });
-
-    // Register close event
-    node.on('close', function () {
-      // Stop observing		
-      coap.stopObserving(urlPrefix + statuspath);
-      // Reset connection
-      coap.reset(urlPrefix);
-    });
-  */
   } else {
     this.logger.error("IP address not configured.");
   }
@@ -62,7 +44,7 @@ philipsAir.prototype.getTopic = function() {
 }
 
 // Function to connect and sync to device and than start observing the device
-philipsAir.prototype.syncAndObserve = function() {
+philipsAir.prototype.syncAndObserve = async function() {
   let that = this;
   
   // Internal function to split response into separate MQTT messages
@@ -114,8 +96,10 @@ philipsAir.prototype.syncAndObserve = function() {
   };
 
   if (this.observe) {
-    // Sync device to connect
-    this.syncDevice().then((result) => {
+  try {
+      // Sync device to connect
+      await this.syncDevice();
+
       // Start observing
       coap.observe(
         url = this.urlPrefix + this.statuspath,
@@ -126,9 +110,9 @@ philipsAir.prototype.syncAndObserve = function() {
       }).catch(() => {
         this.logger.error("Error while observing");
       });
-    }).catch(err => {
+    } catch (error) {
       this.logger.error("Observing Philips Air failed.");
-    });
+    };
   }
 };
 
@@ -164,26 +148,8 @@ philipsAir.prototype.syncDevice = function () {
   })
 };
 
-// Function to handle command requests (obsolete)
-philipsAir.prototype.receiveCommand = function (command) {
-  if (command.toUpperCase() == "OBSERVE") {
-    this.logger.info("Start observation of " + this.ipAddress);
-    this.observe = true;
-    // Connect and observe
-    this.syncAndObserve();
-    return;
-  } else if (command.toUpperCase() == "STOP") {
-    this.logger.info("Stop observation of " + this.ipAddress);
-    this.observe = false;
-    coap.stopObserving(this.urlPrefix + this.statuspath);
-    return;
-  }
-  // Device commands
-  this.sendDeviceCommand(command);
-};
-
 // Function to handle commands/settings to the device
-philipsAir.prototype.sendDeviceCommand = function (commandIn, value) {
+philipsAir.prototype.sendDeviceCommand = async function (commandIn, value) {
   let that = this;
   const commands = ["aqil", "cl", "dt", "func", "mode", "om", "pwr", "rhset", "uil"]; // TODO more commands?
 
@@ -211,7 +177,6 @@ philipsAir.prototype.sendDeviceCommand = function (commandIn, value) {
     return;
   };
 
-  console.log('cmd', commandIn, commands.includes(commandIn.toLowerCase()));
   if (!commandIn) {
     this.logger.error("Command empty.");
     return;
@@ -243,13 +208,15 @@ philipsAir.prototype.sendDeviceCommand = function (commandIn, value) {
   let message = { state: { desired: { CommandType: 'app', DeviceId: '', EnduserId: '1' } } };
   message.state.desired[command] = commandValue;
 
-  console.log('send message:', message);
+  this.logger.debug('send message: '+ JSON.stringify(message));
 
   // Stop observing to send command
   coap.stopObserving(this.urlPrefix + this.statuspath);
 
   // Sync and then send command
-  this.syncDevice().then(() => {
+  try {
+    await this.syncDevice();
+
     const unencryptedPayload = JSON.stringify(message);
     const encryptedPayload = encryptPayload(unencryptedPayload);
 
@@ -260,22 +227,19 @@ philipsAir.prototype.sendDeviceCommand = function (commandIn, value) {
       .then(response => {
         if (response.payload) {
           const payload = response.payload.toString('utf-8');
-          this.logger.info("Command response payload: " + payload);
+          this.logger.debug("Command response payload: " + payload);
         } else {
-          this.logger.erroror("Command response invalid: " + err);
+          this.logger.error("Command response invalid: " + err);
         }
         this.syncAndObserve();
       }).catch(err => {
-        this.logger.erroror("Command failed to transmit: " + err);
+        this.logger.error("Command failed to transmit: " + err);
         this.syncAndObserve();
       });
-  })
-    .catch(err => {
-      this.logger.erroror("Philips Air failed to sync, Command failed to transmit: " + err);
-      this.syncAndObserve();
-    })
-
+  } catch (err) {
+    this.logger.error("Philips Air failed to sync, Command failed to transmit: " + err);
+    this.syncAndObserve();
+  }
 };
-
 
 module.exports = philipsAir;
