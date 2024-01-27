@@ -35,6 +35,6 @@ The plugin provides the original Philips icons which can be used in your Loxone,
 | ![Preview](../icons/svg/speed_3.svg)                 | speed_3.svg                 |
 | ![Preview](../icons/svg/timer_reset_button.svg)      | timer_reset_button.svg      |
 | ![Preview](../icons/svg/two_in_one_mode.svg)         | two_in_one_mode.svg         |
-| ![Preview](../icons/svg/two_in_one_mode_button.svg)  | two_in_one_mode_button      |
+| ![Preview](../icons/svg/two_in_one_mode_button.svg)  | two_in_one_mode_button.svg  |
 | ![Preview](../icons/svg/water_refill.svg)            | water_refill.svg            |
 | ![Preview](../icons/svg/wifi.svg)                    | wifi.svg                    |
