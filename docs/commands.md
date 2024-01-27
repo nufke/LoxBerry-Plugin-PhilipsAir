@@ -42,3 +42,11 @@
 | uil      | Buttons light                | string  | 0 (off), 1 (on)                             |
 | wicksts  | Wick filter replace (hours)  | number  |                                             |
 | wl       | Water level                  | number  | 0 (empty), 100 (filled)                     |
+
+# Error codes
+
+| Error    | Description                  |
+|----------|------------------------------|
+| 49408    | Water tank empty             | 
+| 32768    | Water tank open              |
+| 49155    | Clean pre-filter             |

@@ -7,9 +7,10 @@ LoxBerry Plugin for the Philips Air Purifiers and Humidifiers.
  * Tested on AC2729/10, not tested on other Philips Air devices.
  * Pluging is in early development, use at your own risk.
 
-## Acknowledgements
-
-This plugin is based on [node-red-contrib-philips-airjs](https://github.com/dionmes/node-red-contrib-philips-airjs). Special thanks to [@dionmes](https://github.com/dionmes).
+## Credits
+ * Original reverse engineering of the encrypted-CoAP protocol was done by @rgerganov at https://github.com/rgerganov/py-air-control
+ * The base of this plugin is made by @dionmes at https://github.com/dionmes/node-red-contrib-philips-airjs.
+ * Icons are made by @thomasloven and can be found in the repository of @kongo09 at https://github.com/kongo09/philips-airpurifier-coap
 
 ## Issues and questions
 

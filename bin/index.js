@@ -45,10 +45,10 @@ const main = () => {
   mqttClient.on('message', function(topic, message, packet) {
     const device = devices.find(item => topic.includes(item.mqtt));
     if (message.length && device) {
-      let resp = JSON.parse(message.toString());
+      let resp = message.toString();
       const items = topic.split("/");
       const command = items[items.length-1]; // select last item
-      //console.log('command received', command, resp);
+      logger.debug('Command received via MQTT:' + command + ' ' + resp);
       device.inst.sendDeviceCommand(command, resp);
     }
   });
@@ -65,7 +65,7 @@ const main = () => {
     if (device.ipAddress && device.mqtt) {
       logger.info("Registered Philips Air device with IP address " + device.ipAddress);
       device.inst = new PhilipsAir(device, logger);
-      device.inst.on('publishObs', function(topic, value) {
+      device.inst.on('observation_air', function(topic, value) {
         publishTopic(topic,value);
       });
     } else {

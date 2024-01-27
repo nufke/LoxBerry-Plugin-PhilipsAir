@@ -12,9 +12,9 @@
 
     <div v-if="config.devices.length>0">
       <div id="vforid" v-for="(device, index) in config.devices">
-        <div style="display: flex;">
+        <div style="display: flex; align-items: center;">
           <h3>Device {{index+1}}</h3>
-          <p><a v-on:click="removeDevice(index)">Remove</a></p>
+          <p style="font-size: small; font-weight: normal;">&nbsp;(<a v-on:click="removeDevice(index)">Remove</a>)</p>
         </div>
         <div class="ui-field-contain">
           <label for="device.ipAddress" class="col-fixed" style="min-width:15%">IP address</label>
