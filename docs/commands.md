@@ -47,6 +47,8 @@
 
 | Error    | Description                  |
 |----------|------------------------------|
-| 49408    | Water tank empty             | 
 | 32768    | Water tank open              |
 | 49155    | Clean pre-filter             |
+| 49184    | Clean wick filter            |
+| 49408    | Water tank empty             | 
+ 
