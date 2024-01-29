@@ -16,5 +16,4 @@ LoxBerry Plugin for the Philips Air Purifiers and Humidifiers.
 
 Please submit your issues and questions via the GitHub [issues](https://github.com/nufke/LoxBerry-Plugin-PhilipsAir/issues) or use the [LoxForum](https://www.loxforum.com)
 
-![Buy me a coffee](https://www.buymeacoffee.com/nufke)
-<img src="./icons/svg/bmc.svg">
+<a href="https://www.buymeacoffee.com/nufke" target="_blank"><img src="./icons/svg/bmc.svg" alt="Buy Me A Coffee"></a>
