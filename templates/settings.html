@@ -126,7 +126,7 @@
             return response.json();
           })
           .then(data => {
-            console.log('data', data);
+            //console.log('data', data);
             this.config = data;
           });
       },
@@ -139,7 +139,7 @@
       removeDevice(index) {
         const devices = this.config.devices.toSpliced(index, 1);
         this.config.devices = devices;
-        console.log('delete item', index, this.config.devices);
+        console.log('Called removeDevice', index, this.config.devices);
         this.dataChanged();
       },
 

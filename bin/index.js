@@ -25,7 +25,6 @@ const main = () => {
   let logLevel = getPluginLogLevel();
   let devices = [ ...config.devices];
 
-  //console.log('devices', devices);
   const logger = new Logger(syslogDbFile, logLevel);
   const app = new App(logger, logFile);
   const mqttClient = new MqttClient(globalConfig, app);
@@ -35,10 +34,7 @@ const main = () => {
     return;
   }
 
-  // add field to store instance and subscribe each device to receive MQTT messages 
-  devices.forEach( device => {
-    device["inst"] = null;
-  });
+  const philipsAir = new PhilipsAir(devices, logger);
 
   mqttClient.subscribe(devices.map( item => item.mqtt + "/cmd/#"));
 
@@ -49,29 +45,18 @@ const main = () => {
       const items = topic.split("/");
       const command = items[items.length-1]; // select last item
       logger.debug('Command received via MQTT:' + command + ' ' + resp);
-      device.inst.sendDeviceCommand(command, resp);
+      philipsAir.sendCommand(device.ipAddress, { command: command, value: resp });
     }
   });
 
-  function publishTopic(topic, data) {
-    let payload = String(data);
+  philipsAir.on('observation', function(topic, value) {
+    let payload = String(value);
     let options = { retain: true, qos: 1 };
+    let fixedTopicName = topic.replace('+', '_').replace('#', '_')
     logger.debug('Publish topic: ' + topic + ', payload: ' + payload);
-    var fixedTopicName = topic.replace('+', '_').replace('#', '_')
     mqttClient.publish(fixedTopicName, payload, options);
-  };
-
-  devices.forEach( device => {
-    if (device.ipAddress && device.mqtt) {
-      logger.info("Registered Philips Air device with IP address " + device.ipAddress);
-      device.inst = new PhilipsAir(device, logger);
-      device.inst.on('observation_air', function(topic, value) {
-        publishTopic(topic,value);
-      });
-    } else {
-      logger.info("Philips Air - Device " + device.ipAddress + ' not registered.');
-    }
   });
+
 };
 
 main();
