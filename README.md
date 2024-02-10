@@ -2,7 +2,7 @@
 
 LoxBerry Plugin for the Philips Air Purifiers and Humidifiers.
 
-More information can be found on the [wiki](./wiki).
+More information can be found on the [wiki](https://github.com/nufke/LoxBerry-Plugin-PhilipsAir/wiki).
 
 **IMPORTANT:**
  * Only the encrypted-CoAP protocol is implemented.
