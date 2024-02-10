@@ -2,6 +2,8 @@
 
 LoxBerry Plugin for the Philips Air Purifiers and Humidifiers.
 
+More information can be found on the [wiki](./wiki).
+
 **IMPORTANT:**
  * Only the encrypted-CoAP protocol is implemented.
  * Tested on AC2729/10, not tested on other Philips Air devices.
