@@ -1,5 +1,9 @@
 # Version History
 
+## v0.0.4 (ALPHA)
+
+ * Update loxberry-logger (resolve node-gyp build issue)
+
 ## v0.0.3 (ALPHA)
 
  * Automatically start plugin after reboot

@@ -1,6 +1,6 @@
 {
   "name": "philipsair",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "LoxBerry Philips Air plugin",
   "main": "index.js",
   "directories": {
@@ -29,7 +29,7 @@
   "homepage": "https://github.com/nufke/LoxBerry-Plugin-hilipsAir/",
   "dependencies": {
     "aes-js": "^3.1.2",
-    "loxberry-logger": "git+https://github.com/nufke/loxberry-logger.git#9d1a7f0",
+    "loxberry-logger": "git+https://github.com/nufke/loxberry-logger.git#v0.0.2",
     "mqtt": "^4.3.7",
     "node-coap-client": "^2.1.0",
     "pkcs7": "^1.0.4",
